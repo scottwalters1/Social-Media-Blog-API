@@ -33,6 +33,14 @@ public class AccountService {
         return accountDAO.addAccount(account);
     }
 
+    public Account getAccountByUsername(String username) {
+        return accountDAO.getAccountByUsername(username);
+    }
+
+    public Account getAccountById(int id) {
+        return accountDAO.getAccountById(id);
+    }
+
     /**
      * Verify account method.
      * 
