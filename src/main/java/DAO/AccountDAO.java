@@ -9,7 +9,7 @@ import Util.ConnectionUtil;
 
 public class AccountDAO {
     
-    public Account insertAccount(Account account){
+    public Account addAccount(Account account){
         Connection conn = ConnectionUtil.getConnection();
 
         try {
