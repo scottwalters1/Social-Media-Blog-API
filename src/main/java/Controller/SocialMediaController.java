@@ -109,7 +109,7 @@ public class SocialMediaController {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         Message message = messageService.getMessage(message_id);
         if (message != null) {
-            ctx.json(message);
+            ctx.json(message); 
         } else {
             // ctx.status(200);
             ctx.json("");
