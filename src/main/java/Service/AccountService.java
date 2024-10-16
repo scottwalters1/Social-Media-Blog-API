@@ -12,7 +12,13 @@ public class AccountService {
 
     // Consider another constructor - refer to AuthorService from library
 
+
     public Account addAccount(Account account){
+        if (accountDAO.getAccountByUsername(account.getUsername()) != null ||
+            account.getUsername().length() < 4 ||
+            account.getUsername() == ""){
+            return null;
+        }
         return accountDAO.addAccount(account);
     }
 }
