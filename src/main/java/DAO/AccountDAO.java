@@ -1,9 +1,13 @@
 package DAO;
 
+import java.sql.Statement;
+// overwrote this to make RETURN_GENERATED_KEYS work
+// import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 
 import Model.Account;
 import Util.ConnectionUtil;
@@ -35,13 +39,20 @@ public class AccountDAO {
 
         try {
             String sql = "INSERT INTO account (username, password) VALUES (?, ?)";
-            PreparedStatement statement = conn.prepareStatement(sql);
+            PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             statement.setString(1, account.getUsername());
             statement.setString(2, account.getPassword());
 
             statement.executeUpdate();
-            return account;
+            ResultSet pkeyResultSet = statement.getGeneratedKeys();
+            int new_id = -1;
+            if (pkeyResultSet.next()){
+                new_id = pkeyResultSet.getInt(1);
+                return new Account(new_id, account.getUsername(), account.getPassword());
+            }
+            // return new Account(-2, account.getUsername(), account.getPassword());
+            
         } catch(SQLException e){
             System.out.println(e.getMessage());
         }
