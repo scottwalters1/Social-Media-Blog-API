@@ -44,7 +44,7 @@ public class AccountDAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;  
+        return null;
     }
 
     public Account getAccountById(int id) {
