@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
@@ -46,6 +47,7 @@ public class SocialMediaController {
         app.get("messages", this::getAllMessageHandler);
         app.get("/messages/{message_id}", this::getMessageHandler);
         app.delete("/messages/{message_id}", this::deleteHandler);
+        app.patch("/messages/{message_id}", this::updateMessageHandler);
 
         return app;
     }
@@ -124,6 +126,23 @@ public class SocialMediaController {
             ctx.json(message);
         } else {
             ctx.status(200);
+        }
+    }
+
+    private void updateMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(ctx.body());
+        String message_text = jsonNode.get("message_text").asText();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        
+        Message updatedMessage = messageService.updateMessage(message_text, message_id);
+        Message messageAlreadyPresent = messageService.getMessage(message_id);
+        // Maybe check for messageAlreadyPresent elsewhere
+        if (updatedMessage != null && messageAlreadyPresent != null) {
+            ctx.json(updatedMessage);
+        } else {
+            ctx.status(400);
         }
     }
     
