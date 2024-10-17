@@ -12,7 +12,7 @@ import Model.Message;
 import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
-import io.javalin.http.Context; 
+import io.javalin.http.Context;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your
@@ -40,7 +40,7 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.get("example-endpoint", this::exampleHandler);
+
         app.post("register", this::registerHandler);
         app.post("login", this::loginHandler);
         app.post("messages", this::createMessageHandler);
@@ -91,12 +91,19 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * Handler for creating a new message.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     * @throws JsonMappingException
+     * @throws JsonProcessingException
+     */
     private void createMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
         Message createdMessage = messageService.createMessage(message);
         Account postedBy = accountService.getAccountById(message.posted_by);
-        // Handle posted_by belonging to real account here or elsewhere?
         if (createdMessage != null && postedBy != null) {
             ctx.json(mapper.writeValueAsString(createdMessage));
         } else {
@@ -104,26 +111,26 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * Handler for retrieving all messages.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     */
     private void getAllMessageHandler(Context ctx) {
         List<Message> messages = messageService.getAllMessages();
         ctx.json(messages);
     }
 
+    /**
+     * Handler for retrieving a message given a message_id.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     */
     private void getMessageHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         Message message = messageService.getMessage(message_id);
-        if (message != null) {
-            ctx.json(message); 
-        } else {
-            // ctx.status(200);
-            ctx.json("");
-        }
-    }
-
-    private void deleteHandler(Context ctx) {
-        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        Message message = messageService.deleteMessage(message_id);
-        // Try just returning json instead of if else
         if (message != null) {
             ctx.json(message);
         } else {
@@ -131,16 +138,37 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * Handler for deleting a message.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     */
+    private void deleteHandler(Context ctx) {
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message message = messageService.deleteMessage(message_id);
+        if (message != null) {
+            ctx.json(message);
+        } else {
+            ctx.status(200);
+        }
+    }
+
+    /**
+     * Handler for updating the text of a message.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     * @throws JsonMappingException
+     * @throws JsonProcessingException
+     */
     private void updateMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
-        
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(ctx.body());
         String message_text = jsonNode.get("message_text").asText();
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-
         Message updatedMessage = messageService.updateMessage(message_text, message_id);
         Message messageAlreadyPresent = messageService.getMessage(message_id);
-        // Maybe check for messageAlreadyPresent elsewhere
         if (updatedMessage != null && messageAlreadyPresent != null) {
             ctx.json(updatedMessage);
         } else {
@@ -148,23 +176,17 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * Handler for getting all messages from a particular user.
+     * 
+     * @param ctx The Javalin Context object manages information about both the HTTP
+     *            request and response.
+     */
     private void getAllMessagesFromUserHandler(Context ctx) {
-
         int account_id = Integer.parseInt(ctx.pathParam("account_id"));
         System.out.println(account_id);
         List<Message> messages = messageService.getAllMessagesFromUser(account_id);
         ctx.json(messages);
-
-    }
-    
-    /**
-     * This is an example handler for an example endpoint.
-     * 
-     * @param context The Javalin Context object manages information about both the
-     *                HTTP request and response.
-     */
-    private void exampleHandler(Context context) {
-        context.json("sample text");
     }
 
 }

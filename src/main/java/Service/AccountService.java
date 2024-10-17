@@ -16,13 +16,11 @@ public class AccountService {
         accountDAO = new AccountDAO();
     }
 
-    // Consider another constructor - refer to AuthorService from library
-
     /**
      * Add account method.
      * 
      * @param account
-     * @return
+     * @return added account
      */
     public Account addAccount(Account account) {
         if (accountDAO.getAccountByUsername(account.getUsername()) != null ||
@@ -33,10 +31,22 @@ public class AccountService {
         return accountDAO.addAccount(account);
     }
 
+    /**
+     * Getter for account given username.
+     * 
+     * @param username
+     * @return account
+     */
     public Account getAccountByUsername(String username) {
         return accountDAO.getAccountByUsername(username);
     }
 
+    /**
+     * Getter for account given id.
+     * 
+     * @param id
+     * @return account
+     */
     public Account getAccountById(int id) {
         return accountDAO.getAccountById(id);
     }
@@ -45,7 +55,7 @@ public class AccountService {
      * Verify account method.
      * 
      * @param account
-     * @return
+     * @return verified account
      */
     public Account verifyAccount(Account account) {
         Account verifiedAccount = accountDAO.getAccountByUsername(account.getUsername());
