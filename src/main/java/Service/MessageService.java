@@ -39,4 +39,8 @@ public class MessageService {
         }
         return messageDAO.updateMessage(message_text, message_id);
     }
+
+    public List<Message> getAllMessagesFromUser(int account_id) {
+        return messageDAO.getAllMessagesFromUser(account_id);
+    }
 }

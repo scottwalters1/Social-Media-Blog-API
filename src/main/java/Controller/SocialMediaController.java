@@ -48,6 +48,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageHandler);
         app.delete("/messages/{message_id}", this::deleteHandler);
         app.patch("/messages/{message_id}", this::updateMessageHandler);
+        app.get("/accounts/{account_id}", this::getAllMessagesFromUserHandler);
 
         return app;
     }
@@ -122,6 +123,7 @@ public class SocialMediaController {
     private void deleteHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         Message message = messageService.deleteMessage(message_id);
+        // Try just returning json instead of if else
         if (message != null) {
             ctx.json(message);
         } else {
@@ -135,7 +137,7 @@ public class SocialMediaController {
         JsonNode jsonNode = mapper.readTree(ctx.body());
         String message_text = jsonNode.get("message_text").asText();
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        
+
         Message updatedMessage = messageService.updateMessage(message_text, message_id);
         Message messageAlreadyPresent = messageService.getMessage(message_id);
         // Maybe check for messageAlreadyPresent elsewhere
@@ -144,6 +146,15 @@ public class SocialMediaController {
         } else {
             ctx.status(400);
         }
+    }
+
+    private void getAllMessagesFromUserHandler(Context ctx) {
+
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+        System.out.println(account_id);
+        List<Message> messages = messageService.getAllMessagesFromUser(account_id);
+        ctx.json(messages);
+
     }
     
     /**
