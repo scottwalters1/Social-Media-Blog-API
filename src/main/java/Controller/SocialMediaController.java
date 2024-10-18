@@ -28,7 +28,7 @@ public class SocialMediaController {
     public SocialMediaController() {
         this.accountService = new AccountService();
         this.messageService = new MessageService();
-    } 
+    }
 
     /**
      * In order for the test cases to work, you will need to write the endpoints in
